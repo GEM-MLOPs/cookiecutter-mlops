@@ -1,0 +1,13 @@
+[project]
+name = "{{ cookiecutter.repo_name }}"
+version = "0.1.0"
+description = "{{ cookiecutter.description }}"
+requires-python = ">=3.12.1"
+dependencies = [
+    "numpy",
+    "pandas",
+    "scikit-learn",
+    "matplotlib",
+    "jupyterlab",
+    "xgboost"
+]
