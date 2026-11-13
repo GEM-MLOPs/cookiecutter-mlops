@@ -9,5 +9,6 @@ dependencies = [
     "scikit-learn",
     "matplotlib",
     "jupyterlab",
-    "xgboost"
+    "xgboost",
+    "seaborn"
 ]
