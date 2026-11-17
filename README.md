@@ -9,9 +9,9 @@ La estructura sirve como punto de partida para aplicar buenas prácticas de Mach
 ## Características
 
 - Generación de un directorio de proyecto con nombre, descripción, autor y opción de licencia configurables.
-- Separación inicial de datos originales y procesados, código, notebooks, documentación y artefactos.
-- Archivos `.gitkeep` que mantienen presentes directorios inicialmente vacíos y un `.gitignore` para archivos locales y datos.
-- Archivos iniciales para configuración de entorno, contenedores y tareas. Están vacíos y no proporcionan automatización.
+- Organización de datos de ejemplo, código fuente, configuración, pruebas, notebooks, documentación y artefactos.
+- Archivos `.gitkeep` que mantienen presentes directorios inicialmente vacíos y un `.gitignore` para archivos locales.
+- Gestión de dependencias con `pyproject.toml` y `uv.lock`; los archivos de contenedor y tareas son puntos de partida vacíos, no automatizaciones configuradas.
 
 La plantilla puede ampliarse con código de entrenamiento, pruebas, seguimiento de experimentos, CI/CD o infraestructura. Estas capacidades no están implementadas actualmente.
 
@@ -19,8 +19,9 @@ La plantilla puede ampliarse con código de entrenamiento, pruebas, seguimiento 
 
 ```text
 <repo_name>/
-├── .env
+├── .env.example
 ├── .envrc
+├── .gitattributes
 ├── .github/
 │   └── workflows/
 │       └── .gitkeep
@@ -31,35 +32,46 @@ La plantilla puede ampliarse con código de entrenamiento, pruebas, seguimiento 
 ├── Taskfile.yml
 ├── artifacts/
 │   └── .gitkeep
+├── configs/
+│   └── .gitkeep
 ├── data/
 │   ├── processed/
 │   │   └── .gitkeep
 │   └── raw/
-│       └── .gitkeep
+│       ├── order_details.csv
+│       ├── orders.csv
+│       ├── products.csv
+│       └── users.csv
 ├── docker-compose.yml
 ├── docs/
 │   └── .gitkeep
 ├── infra/
 │   └── .gitkeep
 ├── notebooks/
-│   └── .gitkeep
-├── requirements.txt
+│   └── exploration.ipynb
+├── pyproject.toml
 ├── scripts/
 │   └── .gitkeep
-└── src/
-    └── .gitkeep
+├── src/
+│   ├── __init__.py
+│   └── settings.py
+├── tests/
+│   └── .gitkeep
+└── uv.lock
 ```
 
-- `data/raw/` y `data/processed/`: ubicaciones previstas para datos originales y procesados, respectivamente.
-- `src/`: código fuente del proyecto; inicialmente no contiene código.
-- `notebooks/`: notebooks de exploración y experimentación.
+- `data/raw/` y `data/processed/`: datos de ejemplo originales y ubicación para datos procesados.
+- `src/`: paquete para el código fuente y la configuración del proyecto.
+- `configs/`: ubicación para archivos de configuración.
+- `tests/`: ubicación para las pruebas del proyecto.
+- `notebooks/`: notebook inicial de exploración y experimentación.
 - `artifacts/`: ubicación prevista para resultados y artefactos, como modelos serializados.
 - `docs/`, `scripts/` e `infra/`: documentación, scripts auxiliares y archivos de infraestructura que se incorporen posteriormente.
 - `.github/workflows/`: ubicación prevista para flujos de GitHub Actions; no contiene flujos configurados.
 
-`Dockerfile`, `docker-compose.yml`, `Taskfile.yml`, `.env`, `.envrc` y `requirements.txt` se generan vacíos. `README.md` y `LICENSE` se generan a partir de las variables de la plantilla.
+`Dockerfile`, `docker-compose.yml`, `Taskfile.yml`, `.env.example` y `.envrc` se generan vacíos. `pyproject.toml` declara las dependencias y `uv.lock` fija sus versiones. `README.md` y `LICENSE` se generan a partir de las variables de la plantilla.
 
-El `.gitignore` generado excluye `data/`, `.env` y `.envrc`. Por tanto, Git también ignorará los `.gitkeep` dentro de `data/` por defecto; si se necesitan esos directorios en un repositorio nuevo, será necesario ajustar el `.gitignore` o añadirlos explícitamente.
+El `.gitignore` generado excluye `.envrc` y archivos locales como cachés de Python, pero no excluye los datos de `data/`. Tampoco excluye `.venv/`, que es el entorno creado por `uv sync`; añádelo si no quieres incluir ese entorno en Git.
 
 ## Requisitos previos
 
@@ -99,16 +111,14 @@ cookiecutter https://github.com/GEM-MLOPs/cookiecutter-mlops.git
 
 ## Primeros pasos después de generar el proyecto
 
-Entra en el directorio generado y utiliza `uv` para crear el entorno virtual e instalar las dependencias. Sustituye `Proyecto-MLOps` por el valor elegido para `repo_name`:
+Entra en el directorio generado y utiliza `uv` para crear el entorno virtual e instalar las dependencias declaradas en `pyproject.toml`, usando las versiones de `uv.lock`. Sustituye `Proyecto-MLOps` por el valor elegido para `repo_name`:
 
 ```bash
 cd Proyecto-MLOps
-uv venv
-source .venv/bin/activate
-uv pip install -r requirements.txt
+uv sync
 ```
 
-En Windows, activa el entorno con `.venv\Scripts\activate` en lugar de `source .venv/bin/activate`. El `.gitignore` generado no excluye `.venv/`; añádelo si no quieres incluir el entorno en Git. El archivo `requirements.txt` generado está vacío, por lo que la instalación inicial no añade dependencias. Registra allí las dependencias que necesite el proyecto.
+`uv sync` crea `.venv/` automáticamente. Para ejecutar comandos dentro del entorno sin activarlo, usa `uv run <comando>`. Si prefieres activarlo manualmente, ejecuta `source .venv/bin/activate` en macOS/Linux o `.venv\Scripts\activate` en Windows. Añade las dependencias del proyecto en `pyproject.toml` y actualiza `uv.lock` con `uv lock`.
 
 Actualiza el README generado, coloca los datos en `data/` según su etapa y desarrolla el código en `src/`. Usa los demás directorios cuando el proyecto los necesite. Revisa la licencia generada antes de distribuir el proyecto.
 

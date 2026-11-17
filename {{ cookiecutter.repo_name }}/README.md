@@ -4,22 +4,21 @@
 
 ## Primeros pasos
 
-Instala [uv](https://docs.astral.sh/uv/) y, desde la raíz del proyecto, crea un entorno virtual e instala las dependencias:
+Instala [uv](https://docs.astral.sh/uv/) y, desde la raíz del proyecto, sincroniza el entorno con las dependencias declaradas en `pyproject.toml` y fijadas en `uv.lock`:
 
 ```bash
-uv venv venv
-source venv/bin/activate
-uv pip install -r requirements.txt
+uv sync
 ```
 
-En Windows, activa el entorno con `venv\Scripts\activate` en lugar de `source venv/bin/activate`. El archivo `requirements.txt` está inicialmente vacío; añade las dependencias que necesite el proyecto.
+`uv sync` crea `.venv/` automáticamente e instala las dependencias del proyecto y las del grupo de desarrollo. Para ejecutar comandos dentro del entorno, usa `uv run <comando>`. Si prefieres activarlo manualmente, ejecuta `source .venv/bin/activate` en macOS/Linux o `.venv\Scripts\activate` en Windows.
 
 ## Estructura inicial
 
 ```text
 {{ cookiecutter.repo_name }}/
-├── .env
+├── .env.example
 ├── .envrc
+├── .gitattributes
 ├── .github/
 │   └── workflows/
 │       └── .gitkeep
@@ -30,39 +29,50 @@ En Windows, activa el entorno con `venv\Scripts\activate` en lugar de `source ve
 ├── Taskfile.yml
 ├── artifacts/
 │   └── .gitkeep
+├── configs/
+│   └── .gitkeep
 ├── data/
 │   ├── processed/
 │   │   └── .gitkeep
 │   └── raw/
-│       └── .gitkeep
+│       ├── order_details.csv
+│       ├── orders.csv
+│       ├── products.csv
+│       └── users.csv
 ├── docker-compose.yml
 ├── docs/
 │   └── .gitkeep
 ├── infra/
 │   └── .gitkeep
 ├── notebooks/
-│   └── .gitkeep
-├── requirements.txt
+│   └── exploration.ipynb
+├── pyproject.toml
 ├── scripts/
 │   └── .gitkeep
-└── src/
-    └── .gitkeep
+├── src/
+│   ├── __init__.py
+│   └── settings.py
+├── tests/
+│   └── .gitkeep
+└── uv.lock
 ```
 
-- `data/raw/` y `data/processed/`: datos originales y procesados.
-- `src/`: código fuente del proyecto.
-- `notebooks/`: exploración y experimentación.
+- `data/raw/` contiene datos de ejemplo; `data/processed/` es la ubicación para datos procesados.
+- `src/`: paquete para el código fuente y la configuración del proyecto.
+- `configs/`: ubicación para archivos de configuración.
+- `tests/`: ubicación para las pruebas del proyecto.
+- `notebooks/`: notebook inicial de exploración y experimentación.
 - `artifacts/`: resultados y artefactos, como modelos serializados.
 - `docs/`, `scripts/` e `infra/`: documentación, scripts auxiliares e infraestructura.
 - `.github/workflows/`: ubicación para posibles flujos de GitHub Actions.
 
-Estos directorios están inicialmente vacíos. `Dockerfile`, `docker-compose.yml`, `Taskfile.yml`, `.env` y `.envrc` también están vacíos; no hay flujos de CI/CD, entrenamiento, seguimiento de experimentos ni despliegue configurados.
+Los directorios `artifacts/`, `configs/`, `data/processed/`, `docs/`, `infra/`, `scripts/` y `tests/` están inicialmente vacíos. `Dockerfile`, `docker-compose.yml`, `Taskfile.yml`, `.env.example` y `.envrc` también están vacíos; no hay flujos de CI/CD, entrenamiento, seguimiento de experimentos ni despliegue configurados. Las dependencias se declaran en `pyproject.toml` y sus versiones se fijan en `uv.lock`.
 
-El `.gitignore` excluye `data/`, `.env` y `.envrc`. Los archivos `.gitkeep` dentro de `data/` también se ignoran: ajusta el `.gitignore` o añádelos explícitamente si necesitas conservar esos directorios en Git.
+El `.gitignore` excluye `.envrc` y archivos locales como cachés de Python, pero no excluye los datos de `data/` ni el entorno `.venv/` creado por `uv sync`. Añade `.venv/` si no quieres incluir ese entorno en Git.
 
 ## Desarrollo del proyecto
 
-Añade el código a `src/`, organiza los datos según su etapa y utiliza los demás directorios cuando los necesites. La estructura facilita la organización, pero no garantiza la reproducibilidad: documenta y controla las dependencias, versiones de datos, parámetros y procedimientos de ejecución.
+Añade el código a `src/`, guarda las configuraciones en `configs/`, organiza los datos según su etapa y escribe las pruebas en `tests/`. La estructura facilita la organización, pero no garantiza la reproducibilidad: documenta y controla las dependencias, versiones de datos, parámetros y procedimientos de ejecución.
 
 ## Licencia
 
