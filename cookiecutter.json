@@ -1,7 +1,15 @@
 {
-    "project_name": "project_name",
-    "repo_name": "{{ cookiecutter.project_name.lower().replace(' ', '_') }}",
-    "author_name": "Your name (or your organization/company/team)",
-    "description": "A short description of the project.",
-    "open_source_license": ["MIT", "BSD-3-Clause", "No license file"]
+  "project_name": "Proyecto MLOps",
+  "repo_name": "{{ cookiecutter.project_name.lower().replace(' ', '_').replace('-', '_') }}",
+  "author_name": "Your name (or your organization/company/team)",
+  "description": "Estructura inicial para un proyecto de ciencia de datos y MLOps.",
+  "open_source_license": [
+    "MIT",
+    "BSD-3-Clause",
+    "No license file"
+  ],
+  "_copy_without_render": [
+    "{{ cookiecutter.repo_name }}/notebooks/*.ipynb",
+    "{{ cookiecutter.repo_name }}/scripts/generate_transactions.py"
+  ]
 }
