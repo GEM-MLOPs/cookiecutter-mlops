@@ -1,2 +1,6 @@
 * text=auto
-*.csv filter=lfs diff=lfs merge=lfs -text
+*.ipynb text eol=lf
+*.py text eol=lf
+*.csv text eol=lf
+*.parquet binary
+*.joblib binary

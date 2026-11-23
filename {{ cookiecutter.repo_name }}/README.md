@@ -2,86 +2,33 @@
 
 {{ cookiecutter.description }}
 
-## Primeros pasos
+**Estado inicial (AS-IS):** estructura de carpetas preparada para añadir pipelines durante el curso. No hay servicios, MLOps, APIs ni infraestructura configurados.
 
-Instala [uv](https://docs.astral.sh/uv/) y, desde la raíz del proyecto, sincroniza el entorno con las dependencias declaradas en `pyproject.toml` y fijadas en `uv.lock`:
+## Punto de partida para ciencia de datos
+
+El ejemplo del notebook estudia **la probabilidad de que un cliente con compras previas vuelva a comprar durante los siguientes 60 días** en diferentes cortes mensuales. El target no depende únicamente de la primera compra.
 
 ```bash
 uv sync
+uv run jupyter lab
 ```
 
-`uv sync` crea `.venv/` automáticamente e instala las dependencias del proyecto y las del grupo de desarrollo. Para ejecutar comandos dentro del entorno, usa `uv run <comando>`. Si prefieres activarlo manualmente, ejecuta `source .venv/bin/activate` en macOS/Linux o `.venv\Scripts\activate` en Windows.
+Abre `notebooks/exploration.ipynb` y ejecuta todas sus celdas. Si no existen datos, el notebook llama a `scripts/generate_transactions.py` para crear 12 meses sintéticos desde enero de 2025.
 
-## Estructura inicial
+Para generarlos explícitamente:
 
-```text
-{{ cookiecutter.repo_name }}/
-├── .env.example
-├── .envrc
-├── .gitattributes
-├── .github/
-│   └── workflows/
-│       └── .gitkeep
-├── .gitignore
-├── Dockerfile
-├── LICENSE
-├── README.md
-├── Taskfile.yml
-├── artifacts/
-│   └── .gitkeep
-├── configs/
-│   └── .gitkeep
-├── data/
-│   ├── processed/
-│   │   └── .gitkeep
-│   └── raw/
-│       ├── order_details.csv
-│       ├── orders.csv
-│       ├── products.csv
-│       └── users.csv
-├── docker-compose.yml
-├── docs/
-│   └── .gitkeep
-├── infra/
-│   └── .gitkeep
-├── notebooks/
-│   └── exploration.ipynb
-├── pyproject.toml
-├── scripts/
-│   └── .gitkeep
-├── src/
-│   ├── __init__.py
-│   └── settings.py
-├── tests/
-│   └── .gitkeep
-└── uv.lock
+```bash
+uv run python scripts/generate_transactions.py --init --start 2025-01 --months 12 --customers 1000 --seed 42
 ```
 
-- `data/raw/` contiene datos de ejemplo; `data/processed/` es la ubicación para datos procesados.
-- `src/`: paquete para el código fuente y la configuración del proyecto.
-- `configs/`: ubicación para archivos de configuración.
-- `tests/`: ubicación para las pruebas del proyecto.
-- `notebooks/`: notebook inicial de exploración y experimentación.
-- `artifacts/`: resultados y artefactos, como modelos serializados.
-- `docs/`, `scripts/` e `infra/`: documentación, scripts auxiliares e infraestructura.
-- `.github/workflows/`: ubicación para posibles flujos de GitHub Actions.
+Los datos observables se guardan en `data/synthetic/raw/`. Los perfiles latentes del generador se guardan en `data/synthetic/simulation/` y no se emplean como variables predictoras.
 
-Los directorios `artifacts/`, `configs/`, `data/processed/`, `docs/`, `infra/`, `scripts/` y `tests/` están inicialmente vacíos. `Dockerfile`, `docker-compose.yml`, `Taskfile.yml`, `.env.example` y `.envrc` también están vacíos; no hay flujos de CI/CD, entrenamiento, seguimiento de experimentos ni despliegue configurados. Las dependencias se declaran en `pyproject.toml` y sus versiones se fijan en `uv.lock`.
+## Contenido inicial
 
-El `.gitignore` excluye `.envrc` y archivos locales como cachés de Python, pero no excluye los datos de `data/` ni el entorno `.venv/` creado por `uv sync`. Añade `.venv/` si no quieres incluir ese entorno en Git.
+- `scripts/generate_transactions.py`: generador sintético (único script implementado).
+- `notebooks/exploration.ipynb`: EDA, target temporal, feature engineering, split con embargo, modelos y evaluación, implementado totalmente en celdas.
+- `src/`, `configs/`, `tests/`, `infra/` y las restantes carpetas: vacías con `.gitkeep`.
+- `docker-compose.yml`, `Dockerfile`, `dvc.yaml`, `Taskfile.yml` y entrypoints de pipelines: **archivos vacíos**, intencionalmente.
+- `pyproject.toml`: dependencias mínimas para ejecutar el notebook; no instala herramientas de MLOps.
 
-## Desarrollo del proyecto
-
-Añade el código a `src/`, guarda las configuraciones en `configs/`, organiza los datos según su etapa y escribe las pruebas en `tests/`. La estructura facilita la organización, pero no garantiza la reproducibilidad: documenta y controla las dependencias, versiones de datos, parámetros y procedimientos de ejecución.
-
-## Licencia
-
-{% if cookiecutter.open_source_license == 'No license file' %}
-No se ha seleccionado una licencia; el archivo `LICENSE` generado no contiene texto de licencia.
-{% else %}
-Consulta [LICENSE](LICENSE) para conocer los términos de la licencia seleccionada.
-{% endif %}
-
-## Atribución
-
-Proyecto basado en [Cookiecutter MLOps](https://github.com/Chim-SO/cookiecutter-mlops/), a su vez basado en [Cookiecutter Data Science](https://drivendata.github.io/cookiecutter-data-science/).
+Los pipelines y servicios se incorporarán durante las clases, no desde esta plantilla.
